@@ -1,8 +1,8 @@
 import os
-from langchain.vectorstores import Chroma
-from langchain.embeddings import HuggingFaceEmbeddings
-from langchain.document_loaders import DirectoryLoader, TextLoader
-from langchain.text_splitter import RecursiveCharacterTextSplitter
+from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings import HuggingFaceEmbeddings
+#from langchain.document_loaders import DirectoryLoader, TextLoader
+#from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai.chat_models import ChatOpenAI
 from langchain.prompts.chat import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
@@ -60,7 +60,8 @@ class RagFusion:
         self.query_pipeline = self.fusion_query_pipeline()
 
     def load_model(self):
-        return ChatOpenAI(model_name="gpt-4-turbo-preview")
+        
+        return ChatOpenAI(model_name="gpt-4o-mini")
 
     def fusion_query_pipeline(self):
 
@@ -75,6 +76,11 @@ class RagFusion:
                         '''
                         )
                         ])
-        query_pipeline = (fusion_prompt | self.llm | StrOutputParser() | (lambda x: x.split("\n")))
+        query_pipeline = (
+            fusion_prompt 
+            | self.llm 
+            | StrOutputParser() 
+            | (lambda x: x.split("\n"))
+            )
 
         return query_pipeline

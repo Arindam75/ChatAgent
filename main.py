@@ -1,6 +1,6 @@
 import streamlit as st
 from dotenv import load_dotenv
-from src.chatbot import ChatBot
+from src.chatbot import ChatPipeline
 import os
 import yaml
 
@@ -21,18 +21,16 @@ def build_sidebar():
 def build_header():
     st.header("Welcome To Singapore Tourism ")
 
-
-
+load_dotenv()
 if "chatbot" not in st.session_state:
-    st.session_state.chatbot = ChatBot()
+    st.session_state.chatbot = ChatPipeline()
 
 def main():
 
     generate_page()
     build_sidebar()
     build_header()
-
-    load_dotenv()
+    
 
     st.session_state.chatbot.run()
 

@@ -4,6 +4,7 @@ from langchain_openai import ChatOpenAI
 from langchain_core.output_parsers import StrOutputParser
 from langchain_core.callbacks.base import BaseCallbackHandler
 from langchain_community.chat_message_histories import ChatMessageHistory
+from src.ragfusion import RagFusion
 
 
 class StreamlitCallbackHandler(BaseCallbackHandler):
@@ -21,9 +22,15 @@ class StreamlitCallbackHandler(BaseCallbackHandler):
 
 
 class ChatBot:
-    def __init__(self, model=None):
-
-        self.llm = ChatOpenAI(model=model)
+    def __init__(self, 
+                 config: dict = None):
+        
+        self.ragfusion = RagFusion(llm=config["MODELS"]["LOCAL"]["MODEL_NAME"],
+                                   base_url=config["MODELS"]["LOCAL"]["BASE_URL"],
+                                   db_path=config["VECTOR_DB"]["DBPATH"],
+                                   emb_model_name=config["MODELS"]["EMBEDDINGMODEL"]["MODEL_NAME"])
+        
+        self.llm = ChatOpenAI(model=config["MODELS"]["REMOTE"]["MODEL_NAME"])
         self.prompt = ChatPromptTemplate.from_messages([
             ("system", "You are a helpful assistant."),
             ("human", "{question}"),
@@ -31,14 +38,15 @@ class ChatBot:
         self.chain = self.prompt | self.llm | StrOutputParser()
 
     def build_response(self, user_input):
+        print(self.ragfusion.fusion_chain(user_input))
         return self.chain.invoke({"question": user_input})
 
 
 class ChatPipeline:
-    def __init__(self):
+    def __init__(self, config: dict = None):
 
         self.init_session_state()
-        self.chatbot = ChatBot("gpt-4o-mini")
+        self.chatbot = ChatBot(config)
 
     def init_session_state(self):
         if "messages" not in st.session_state:
@@ -67,7 +75,7 @@ class ChatPipeline:
             with st.chat_message("user"):
                 st.markdown(user_input)
             st.session_state.history.add_user_message(user_input)
-
+            print(st.session_state.history)
             with st.spinner("Thinking..."):
                 response = self.chatbot.build_response(user_input)
                 with st.chat_message("assistant"):
@@ -78,3 +86,4 @@ class ChatPipeline:
                         "content": response
                     })
                     st.session_state.history.add_ai_message(response)
+ 

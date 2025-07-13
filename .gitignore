@@ -1,3 +1,4 @@
 .env
 experiments/
 __pycache__/
+*.pyc

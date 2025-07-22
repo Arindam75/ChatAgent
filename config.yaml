@@ -1,10 +1,9 @@
 MODELS:
-  REMOTE:
+  OPENAI:
       MODEL_NAME: gpt-4-turbo-preview
-  LOCAL:
-      MODEL_NAME: meta-llama-3.1-8b-instruct
-      BASE_URL: http://localhost:1234/v1
+  GEMINI:
+      MODEL_NAME: gemini-2.0-flash
   EMBEDDINGMODEL:
       MODEL_NAME: BAAI/bge-base-en-v1.5
 VECTOR_DB:
-  DBPATH: c:\\Users\\arind\\Documents\\Streamlit\\db\\singapore\\
+  DBPATH: "./vectordb4/singapore"

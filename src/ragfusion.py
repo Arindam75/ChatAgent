@@ -1,4 +1,6 @@
-from langchain_openai import ChatOpenAI
+import os
+from pathlib import Path
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.prompts.chat import ChatPromptTemplate
 from langchain.schema.output_parser import StrOutputParser
 from langchain_chroma import Chroma
@@ -6,6 +8,7 @@ from langchain_huggingface import HuggingFaceEmbeddings
 import textwrap
 from langchain.load import dumps, loads
 from langchain.schema.runnable import RunnableLambda
+from huggingface_hub import snapshot_download
 
 def wrap_text(text: str, 
               width: int=90) -> str:
@@ -65,7 +68,6 @@ def reciprocal_rank_fusion(results: list[list],
 class RagFusion:
     def __init__(self,
                  llm: str = None,
-                 base_url: str = None,
                  db_path: str = None,
                  emb_model_name: str="BAAI/bge-base-en-v1.5"):
         
@@ -88,23 +90,15 @@ class RagFusion:
         if emb_model_name is None:
             raise ValueError("emb_model_name is required")
 
-        self.llm = self.__load_llm(llm,
-                                   base_url)
+        self.llm = self.__load_llm(llm)
         self.db_path = db_path
         self.embeddings = HuggingFaceEmbeddings(model_name=emb_model_name)
         self.vectorstore = self.__build_vectorstore()
 
     def __load_llm(self, 
-                   llm: str = None, 
-                   base_url: str = None):
-        if base_url is not None:
-            return ChatOpenAI(
-                                model_name=llm,
-                                openai_api_base=base_url,
-                                openai_api_key="lm-studio",
-                            )
-        else:
-            return ChatOpenAI(model_name=llm)
+                   llm: str = None):
+
+        return ChatGoogleGenerativeAI(model=llm)
     
     def __build_vectorstore(self):
 
@@ -118,6 +112,16 @@ class RagFusion:
         Returns:
             langchain.vectorstores.Chroma: A Chroma vectorstore instance.
         """
+
+        if not (Path(self.db_path) / "chroma.sqlite3").exists():
+            print("downloading vector dataset...")
+            db_path = os.path.abspath(self.db_path)
+            snapshot_download(
+                                repo_id="Arindam1975/Singapore",
+                                repo_type="dataset",
+                                token=os.environ["HF_API_KEY"],
+                                local_dir=db_path,
+                            )
         vectorstore = Chroma(
                             persist_directory=self.db_path,
                             embedding_function=self.embeddings,

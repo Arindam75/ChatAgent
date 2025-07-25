@@ -68,6 +68,7 @@ class ChatPipeline:
             st.session_state.messages = []
         else:
             st.session_state.messages.clear()
+            st.session_state.history = ChatMessageHistory()
         if "history" not in st.session_state:
             st.session_state.history = ChatMessageHistory()
 

@@ -6,4 +6,4 @@ MODELS:
   EMBEDDINGMODEL:
       MODEL_NAME: BAAI/bge-base-en-v1.5
 VECTOR_DB:
-  DBPATH: "./vectordb4/singapore"
+  DBPATH: "./vectordb/singapore"

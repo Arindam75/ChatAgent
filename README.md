@@ -54,7 +54,7 @@ HF_API_KEY = "hf_xxx"
 Now that the environment is activated , run the following command:<br>
 ```(.venv) PS C:\your_path\ChatAgent> streamlit run main.py```
 
-## 3. Acknowledgement
+## 3. Acknowledgements
 
 - [Sam Witteveen RAG Fusion](https://youtu.be/GchC5WxeXGc?si=pBAzX3naY_D85UM-): This is a fabulous video on RAG Fusion. I have used the same dataset to produce the vector db.
 - [Streamlit Crash Course by Tim](https://youtu.be/o8p7uQCGD0U?si=4fAteqwpkcxP18b6): A very useful course to quickly get acquainted with Streamlit.  
